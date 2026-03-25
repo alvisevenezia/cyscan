@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class ApiService {
   static const String _baseUrlKey = 'base_url';
   static const String _tokenKey = 'admin_token';
-  static const String _defaultBaseUrl = 'https://millesime.logistiscout.fr:8001';
+  static const String _defaultBaseUrl = 'https://millesime.logistiscout.fr';
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   late Dio _dio;
