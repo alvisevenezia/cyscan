@@ -43,12 +43,19 @@ class _TicketQRScreenState extends State<TicketQRScreen> {
       final ref  = widget.ticket['reference'] ?? 'QR';
       final file = File('${dir.path}/billet_${name}_$ref.png');
       await file.writeAsBytes(_qr!);
+
+      final box = context.findRenderObject() as RenderBox;
+
       await Share.shareXFiles([XFile(file.path, mimeType: 'image/png')],
           text: '${widget.ticket['holder_name']} — ${widget.event.name}',
-          subject: 'Billet $ref');
+          subject: 'Billet $ref',
+          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size
+      );
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$e'), backgroundColor: CyColors.errorMid));
+      }
     }
     setState(() => _sharing = false);
   }
@@ -136,9 +143,12 @@ class _TicketQRScreenState extends State<TicketQRScreen> {
   }
 
   Widget _buildQR() {
-    if (_loading) return const SizedBox(height: 240,
+    if (_loading) {
+      return const SizedBox(height: 240,
         child: Center(child: CircularProgressIndicator(color: CyColors.bordeaux, strokeWidth: 2)));
-    if (_error != null && _qr == null) return SizedBox(height: 220, child: Column(
+    }
+    if (_error != null && _qr == null) {
+      return SizedBox(height: 220, child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Icon(Icons.error_outline, color: CyColors.errorMid, size: 40),
@@ -148,6 +158,7 @@ class _TicketQRScreenState extends State<TicketQRScreen> {
         TextButton(onPressed: _load, child: Text('Réessayer', style: CyText.label(size: 13, color: CyColors.bordeaux))),
       ],
     ));
+    }
     return Image.memory(_qr!, fit: BoxFit.contain);
   }
 
